@@ -7,7 +7,7 @@ x_1=0.04
 x_2= 0.2
 y_1 =0.5
 alpha = 0.4
-threshold =0.005
+threshold =0.0001
 
 
 
@@ -75,19 +75,31 @@ def main():
 	w_4 = 0.25
 	w_5 = 0.21
 	w_6 = 0.3
-
-	# print("forward_propagation:")
-	updated_weight_rmse=forward_and_back_propagation(w_1,w_2,w_3,w_4,w_5,w_6)
-	while(updated_weight_rmse[-1]>threshold):
-		updated_weight_rmse = forward_and_back_propagation(
-			updated_weight_rmse[0],
-			updated_weight_rmse[1],
-			updated_weight_rmse[2],
-			updated_weight_rmse[3],
-			updated_weight_rmse[4],
-			updated_weight_rmse[5])
-		print(updated_weight_rmse)
-
+	# run the first two trainning to get difference in error
+	updated_weight_rmse_pre=forward_and_back_propagation(w_1,w_2,w_3,w_4,w_5,w_6)
+	updated_weight_rmse_post=forward_and_back_propagation(
+		updated_weight_rmse_pre[0],
+		updated_weight_rmse_pre[1],
+		updated_weight_rmse_pre[2],
+		updated_weight_rmse_pre[3],
+		updated_weight_rmse_pre[4],
+		updated_weight_rmse_pre[5])
+	while(abs(updated_weight_rmse_pre[-1] - updated_weight_rmse_post[-1])>threshold):
+		# print(updated_weight_rmse_pre)
+		# print(updated_weight_rmse_post)
+		# print("Difference in error of two rounds of training: ", abs(updated_weight_rmse_pre[-1] - updated_weight_rmse_post[-1]))
+		updated_weight_rmse_pre=updated_weight_rmse_post
+		updated_weight_rmse_post= forward_and_back_propagation(
+			updated_weight_rmse_post[0],
+			updated_weight_rmse_post[1],
+			updated_weight_rmse_post[2],
+			updated_weight_rmse_post[3],
+			updated_weight_rmse_post[4],
+			updated_weight_rmse_post[5])
+		# print(updated_weight_rmse_post)
+		
+	# print("------------------------------------------")
+	# print(updated_weight_rmse_post)
 
 if __name__ == "__main__":
 
