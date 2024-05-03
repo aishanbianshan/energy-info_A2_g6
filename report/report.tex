@@ -75,23 +75,55 @@ where $y(x)$ is the variable for output signal, $x_i$ are variables for input si
 
 \chapter{Question 1}
 
-\section{Linear Regression}
-
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{fig/q1-LR-training.png}
+    \includegraphics[width=1\linewidth]{fig/q1-ALL-training.png}
     \caption{Enter Caption}
     \label{fig:enter-label}
 \end{figure}
 
+\section{Linear Regression}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q1-LR-forecast.png}
+    \caption{Linear regression forecast}
+    \label{fig:q1-LR-forecast}
+\end{figure}
+
 \section{K-nearest Neighbors}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q1-KNN-forecast.png}
+    \caption{K-nearest neighbors forecast}
+    \label{fig:q1-LR-forecast}
+\end{figure}
 
 \section{Support Vector Regression}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q1-SVR-forecast.png}
+    \caption{Support vector regression forecast}
+    \label{fig:q1-LR-forecast}
+\end{figure}
 
 \section{Neural Network}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q1-NN-forecast.png}
+    \caption{Neural network forecast}
+    \label{fig:q1-LR-forecast}
+\end{figure}
 
 \section{Comparison of RMSE}
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|} \hline 
+        Method & LR & KNN & SVR & ANN\\ \hline 
+        RMSE&  0.217&  0.217&  0.214& 0.216\\ \hline
+    \end{tabular}
+    \label{tab:q1-RMSE-comparison}
+\end{table}
 
 
 \chapter{Question 2}
