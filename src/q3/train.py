@@ -10,6 +10,8 @@ fore_df = forecast.copy()
 
 # Linear Regression
 def linear():
+    X = time_series['TIME'].values.reshape(-1, 1)
+    y = time_series['POWER']
     model = LinearRegression()
     model.fit(X, y)
     pred = model.predict(forecast['TIME'].values.reshape(-1, 1))
@@ -99,6 +101,4 @@ def rnn():
 
 if __name__ == "__main__":
     linear()
-    svr()
-    ann()
-    rnn()
+
