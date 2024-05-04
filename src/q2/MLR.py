@@ -1,4 +1,5 @@
-import pandas as pd
+from math import sqrt
+
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -17,9 +18,9 @@ model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 
-# mse
-mse = mean_squared_error(y_test, y_pred)
-print("Mean Squared Error:", mse)
+# rmse
+rmse = sqrt(mean_squared_error(y_test, y_pred))
+print("RMSE:", rmse)
 
 # coefficients and intercept
 print("Coefficients:", model.coef_)
