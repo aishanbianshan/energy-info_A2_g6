@@ -9,7 +9,6 @@ from data import *
 X = train[['WindSpeed', 'WindDirection']]
 y = train['POWER']
 
-#do i need split?
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5410)
 
 
@@ -27,3 +26,4 @@ print("Coefficients:", model.coef_)
 print("Intercept:", model.intercept_)
 
 # TODO: predict forecast and compare with solution
+model.predict()
