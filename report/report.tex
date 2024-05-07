@@ -87,7 +87,7 @@ SVR performs the best out of the four models with an RMSE of 0.214, as seen in T
 \end{table}
 
 \section{Training}
-Figure \ref{fig:q1-training-data} illustrates how each models predicts on the training data. It shows how each of the models behave for different inputs. LR is restricted to a linear relationship, but performs okay in this case compared to the other models. It predicts negative power values for low wind speeds with is not correct. KNN regression uses k=1000, and performs similar to LR in terms of RMSE. Difference being all values are legal. SVR seems to outperform the simple ANN even though it does not predict correctly at low wind speed. Furthermore, SVR seems to not predict a lower power output than 0.1. ANN looks pretty good, but is outperformed by SVR. KNN and SVR has been optimized with some simple parameter tuning.
+Figure \ref{fig:q1-training-data} illustrates how each models predicts on the training data. It shows how each of the models behave for different inputs. LR is restricted to a linear relationship, but performs okay in this case compared to the other models. It predicts negative power values for low wind speeds with is not correct. KNN regression uses k=1000, and performs similar to LR in terms of RMSE. Difference being all values are legal. SVR seems to outperform the simple ANN even though it does not predict correctly at low wind speed. Furthermore, SVR seems to not predict a lower power output than 0.1. ANN looks pretty good, but is outperformed by SVR, as it does not predicts worse on higher power outputs. KNN and SVR has been optimized with some simple parameter tuning.
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{fig/q1-ALL-training.png}
@@ -96,7 +96,23 @@ Figure \ref{fig:q1-training-data} illustrates how each models predicts on the tr
 \end{figure}
 
 \section{Forecasts}
-Figure \ref{fig:q1-forecast-comparison}  shows the forecasted vs. actual power of the four models. All models performs okay, but they seem to struggle with predicting peak power. LR predicts predict negative power output in some places, which is wrong. SVR predicts badly for low power compared to the actual power. 
+Figure \ref{fig:q1-forecast-comparison}  shows the forecasted vs. actual power of the four models. All models performs okay, but they seem to struggle with predicting peak power. LR predicts negative power output in some places, which is wrong. SVR predicts badly for low power compared to the actual power. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q1-ALL-forecast.png}
+    \caption{Comparison of forecasts }
+    \label{fig:q1-forecast-comparison}
+\end{figure}
+
+
+\chapter{Question 2}
+
+
+\begin{equation}
+\frac{\pi}{2} - \arctan \left(\frac{v_{10}}{u_{10}}\right) \mod 2\pi
+
+
+\end{equation}
 
 
 \begin{figure}[H]
@@ -107,9 +123,14 @@ Figure \ref{fig:q1-forecast-comparison}  shows the forecasted vs. actual power o
 \end{figure}
 
 
-\chapter{Question 2}
-% You can calculate the wind direction based on the zonal component and meridional component.
-% what formula???
+\begin{table}[H]
+\begin{tabular}{|l|l|l|}
+\hline
+Method & LR & MLR  \\ \hline
+RMSE   & 0.216  & 0.211    \\ \hline
+\end{tabular}
+\end{table}
+
 
 \chapter{Question 3}
 
@@ -136,7 +157,7 @@ RMSE   & 0  & 0   & 0   & 0   \\ \hline
 
 \chapter{Question 4}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\linewidth]{fig/q4.png}
 \caption{\label{fig:q4} \neural network topology}
