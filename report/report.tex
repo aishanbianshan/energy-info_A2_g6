@@ -76,14 +76,17 @@ where $y(x)$ is the variable for output signal, $x_i$ are variables for input si
 \chapter{Question 1}
 
 \section{Comparison of RMSE}
-SVR performs the best out of the four models with an RMSE of 0.214, as seen in Table \ref{tab:q1-RMSE-comparison} showing the RMSE value of each of the four models. The ANN is second best with an RMSE of 0.215 and LR/KNN has the same RMSE of 0.217.
+SVR performs the best out of the four models with an RMSE of 0.214, as seen in Table \ref{tab:q1-RMSE-comparison} 
+showing the RMSE value of each of the four models. The ANN is second best with an RMSE of 0.215 and LR/KNN has the same RMSE of 0.217.
+%  add some words about why svr performs the best and why other three are not suitable
 \begin{table}[H]
     \centering
+    \caption{\label{tab:q1-RMSE-comparison} Table of RMSE for the Four Methods}
     \begin{tabular}{|c|c|c|c|c|} \hline 
         Method & LR & KNN & SVR & ANN\\ \hline 
         RMSE&  0.217&  0.217&  0.214& 0.215\\ \hline
     \end{tabular}
-    \label{tab:q1-RMSE-comparison}
+    % \label{tab:q1-RMSE-comparison}
 \end{table}
 
 \section{Training}
@@ -107,40 +110,70 @@ Figure \ref{fig:q1-forecast-comparison}  shows the forecasted vs. actual power o
 
 \chapter{Question 2}
 
+To iterate on the Linear Regression Model, we include additional variables to see what effect it has on the predictive power of the model.
+
+From the dataset we calculate the wind direction using the zonal (v10) and meridional (u10) components using the following equation:
 
 \begin{equation}
-\frac{\pi}{2} - \arctan \left(\frac{v_{10}}{u_{10}}\right) \mod 2\pi
-
-
+WindDirection = \frac{\pi}{2} - \arctan \left(\frac{v_{10}}{u_{10}}\right) \mod 2\pi
 \end{equation}
 
+We modulate the equation to ensure the value is between 0 and 1 radians.
+
+We then update our linear model with an additional independant variable - Wind direction. Our updated model is thus:
+
+\begin{equation}
+WindPower = \beta_0 + \beta_1 \cdot WindSpeed + \beta_2 \cdot WindDirection + \epsilon
+\end{equation}
+
+
+Running the prediction model we get the following coefficients for the two independent variables:
+
+\begin{table}[H]
+\begin{tabular}{|l|l|}
+\hline
+$\beta_1$ & 0.12654118  \\ \hline
+$\beta_2$   & 0.01634835   \\ \hline
+\end{tabular}
+\end{table}
+
+As we can see Wind Speed has the larger affect on predicting Wind power, but including Wind Direction still produces a more accurate model if only slightly.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{fig/q2-forecast.png}
-    \caption{Comparison of forecasts }
+    \caption{Comparing LR and MLR predictions with the actual power}
     \label{fig:q2-forecast}
 \end{figure}
 
+The prediction using Multiple Linear Regression is slightly more accurate than the Linear Model, especially during days of higher variance. This is also reflected in the RMSE being slightly lower for MLR. MLR is taking more parameters into the model, wh
 
 \begin{table}[H]
 \begin{tabular}{|l|l|l|}
 \hline
 Method & LR & MLR  \\ \hline
-RMSE   & 0.216  & 0.211    \\ \hline
+RMSE   & 0.217  & 0.211    \\ \hline
 \end{tabular}
 \end{table}
 
 
 \chapter{Question 3}
 
-LR
+LR = 0.293
 
-SVR
+The Linear Regression model takes a simple approach to see if there is a linear relationship between time and power. It then uses this predicted relationship to predict the power for other times.
+
+SVR = 0.287
+
+
 
 ANN
+The Artificial Neural Network takes in the same data, but will try to find weights that reflect the data instead of relying on a linear relationship. 
 
 RNN
+
+For the recurrent neural network we need to preprocess the data by making sequences. We divide the data into sequences based on a window size so that we can feed in the window size to the network and it will predict the next value based on that window.
+
 
 -Time series doesn't necessarily provide a linear relationship, make LR not as accurate?
 
@@ -149,8 +182,8 @@ RNN
 \begin{table}[H]
 \begin{tabular}{|l|l|l|l|l|}
 \hline
-Method & LR & SVR & ANN & RNN \\ \hline
-RMSE   & 0  & 0   & 0   & 0   \\ \hline
+Method & LR     & SVR     & ANN    & RNN \\ \hline
+RMSE   & 0.293  & 0.287   & 0      & 0   \\ \hline
 \end{tabular}
 \end{table}
 
