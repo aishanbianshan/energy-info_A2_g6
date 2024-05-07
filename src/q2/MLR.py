@@ -1,29 +1,31 @@
 from math import sqrt
 
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
 from data import *
 
-X = train[['WindSpeed', 'WindDirection']]
+lr_X = train[['WindSpeed']]
+mlr_X = train[['WindSpeed', 'WindDirection']]
 y = train['POWER']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5410)
-
-
-model = LinearRegression()
-model.fit(X_train, y_train)
-
-y_pred = model.predict(X_test)
-
-# rmse
-rmse = sqrt(mean_squared_error(y_test, y_pred))
-print("RMSE:", rmse)
+lr = LinearRegression()
+mlr = LinearRegression()
+lr.fit(lr_X, y)
+mlr.fit(mlr_X, y)
 
 # coefficients and intercept
-print("Coefficients:", model.coef_)
-print("Intercept:", model.intercept_)
+print("Coefficients:", mlr.coef_)
+print("Intercept:", mlr.intercept_)
 
-# TODO: predict forecast and compare with solution
-model.predict()
+mlr_forecast_X = forecast[['WindSpeed', 'WindDirection']]
+lr_forecast_X = forecast[['WindSpeed']]
+lr_y_pred = lr.predict(lr_forecast_X)
+mlr_y_pred = mlr.predict(mlr_forecast_X)
+forecast_y = solution
+
+lr_rmse = sqrt(mean_squared_error(forecast_y, lr_y_pred))
+mlr_rmse = sqrt(mean_squared_error(forecast_y, mlr_y_pred))
+print("LR RMSE:", lr_rmse)
+print("MLR RMSE:", mlr_rmse)
+

@@ -19,9 +19,11 @@ def calculate_wind_direction(u10, v10):
 
 
 train['WindDirection'] = calculate_wind_direction(train['U10'], train['V10'])
-forecast['WindDirection'] = calculate_wind_direction(train['U10'], train['V10'])
+forecast['WindDirection'] = calculate_wind_direction(forecast['U10'], forecast['V10'])
 train = train[['TIMESTAMP', 'POWER', 'WS10', 'WindDirection']]
-forecast = forecast[['TIMESTAMP', 'POWER', 'WS10', 'WindDirection']]
+forecast = forecast[['TIMESTAMP', 'WS10', 'WindDirection']]
 train.rename(columns={'WS10': 'WindSpeed'}, inplace=True)
 forecast.rename(columns={'WS10': 'WindSpeed'}, inplace=True)
+dates = pd.to_datetime(solution["TIMESTAMP"], format="%Y%m%d %H:%M")
+solution = solution['POWER']
 
