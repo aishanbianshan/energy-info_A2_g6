@@ -30,11 +30,11 @@ def lr_svr_plot():
     plt.show()
 
 def nn_plot():
-    dates_reduced = dates[:windowsize]
+    dates_reduced = dates[:-windowsize]
     plt.figure(figsize=(12, 8))
 
-    plt.plot(dates_reduced, solution['POWER'][:windowsize], label='True Wind Power')
-    plt.plot(dates_reduced, ann[:windowsize], label='ANN Predicted Power')
+    plt.plot(dates_reduced, solution['POWER'][:-windowsize], label='True Wind Power')
+    plt.plot(dates_reduced, ann[:-windowsize], label='ANN Predicted Power')
     plt.plot(dates_reduced, rnn, label='RNN Predicted Power')
 
     plt.title(f"True Wind Power vs ANN and RNN Predicted Power")
