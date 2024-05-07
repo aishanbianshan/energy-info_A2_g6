@@ -1,11 +1,12 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 from sklearn.svm import SVR
 import tensorflow as tf
 from data import *
 
-X = time_series['TIME'].values.reshape(-1, 1)
-y = time_series['POWER'].values
+X = time_series['TIME']
+y = time_series['POWER']
 fore_df = forecast.copy()
 
 # Linear Regression
@@ -16,7 +17,7 @@ def linear():
     model.fit(X, y)
     pred = model.predict(forecast['TIME'].values.reshape(-1, 1))
     fore_df["FORECAST"] = pred
-    rmse = np.sqrt(((fore_df["FORECAST"] - solution["POWER"]) ** 2).mean())
+    rmse = np.sqrt(mean_squared_error(solution["POWER"], fore_df["FORECAST"]))
     print("LR RMSE:", rmse)
     export = fore_df[['TIMESTAMP', 'FORECAST']]
     export.to_csv("export/ForecastTemplate3-LR.csv", index=False)
@@ -27,7 +28,7 @@ def svr():
     model.fit(X, y)
     pred = model.predict(forecast['TIME'].values.reshape(-1, 1))
     fore_df["FORECAST"] = pred
-    rmse = np.sqrt(((fore_df["FORECAST"] - solution["POWER"]) ** 2).mean())
+    rmse = np.sqrt(mean_squared_error(solution["POWER"], fore_df["FORECAST"]))
     print("SVR RMSE:", rmse)
     export = fore_df[['TIMESTAMP', 'FORECAST']]
     export.to_csv("export/ForecastTemplate3-SVR.csv", index=False)
@@ -37,16 +38,16 @@ def ann():
     model = tf.keras.Sequential(
         [
             tf.keras.layers.Dense(10, activation="relu", input_shape=(1,)),
-            tf.keras.layers.Dense(5, activation="relu"),
+            tf.keras.layers.Dense(10, activation="relu"),
             tf.keras.layers.Dense(1),
         ]
     )
     model.compile(optimizer="adam", loss="mean_squared_error")
-    model.fit(X, y, epochs=50, batch_size=16)
+    model.fit(X, y, epochs=30, batch_size=16)
 
-    pred = model.predict(forecast['TIME'].values.reshape(-1, 1))
+    pred = model.predict(forecast['TIME'])
     fore_df["FORECAST"] = pred
-    rmse = np.sqrt(((fore_df["FORECAST"] - solution["POWER"]) ** 2).mean())
+    rmse = np.sqrt(mean_squared_error(solution["POWER"], pred))
     print("ANN RMSE:", rmse)
     export = fore_df[['TIMESTAMP', 'FORECAST']]
     export.to_csv("export/ForecastTemplate3-ANN.csv", index=False)
@@ -69,7 +70,7 @@ def rnn():
     ts['dayofweek'] = ts['TIMESTAMP'].dt.dayofweek
     ts['month'] = ts['TIMESTAMP'].dt.month
 
-    window_size = 10
+    window_size = 5
     X_train, y_train = create_sequences(ts, 'POWER', window_size)
     model = tf.keras.Sequential(
         [
@@ -92,7 +93,7 @@ def rnn():
     df = fore_df.iloc[window_size:]
     sol = solution.iloc[window_size:]
     df["FORECAST"] = pred
-    rmse = np.sqrt(((df["FORECAST"] - sol["POWER"]) ** 2).mean())
+    rmse = np.sqrt(mean_squared_error(sol["POWER"], df["FORECAST"]))
     print("RNN RMSE:", rmse)
     export = df[['TIMESTAMP', 'FORECAST']]
     export.to_csv("export/ForecastTemplate3-RNN.csv", index=False)
@@ -100,5 +101,5 @@ def rnn():
 # Prediction
 
 if __name__ == "__main__":
-    linear()
+    rnn()
 
