@@ -1,3 +1,4 @@
+import keras
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -5,33 +6,59 @@ from sklearn.svm import SVR
 import tensorflow as tf
 from data import *
 
-X = time_series['TIME']
-y = time_series['POWER']
-fore_df = forecast.copy()
+
+#creating the training data set, where y lags by 1
+X = time_series['POWER'][:-1]
+y = time_series['POWER'].shift(-1)[:-1].values
+X = X.values.reshape(-1, 1)
+last = time_series['POWER'].shift(-1).iloc[-2]
+last_value = np.array([last])
+
+
+def prediction(model, filename):
+    export = forecast.copy()
+    predictions = []
+    current_input = last_value
+    for _ in range(len(export)):  # for each hour in the next month
+        next_prediction = model.predict(current_input)
+        predictions.append(next_prediction.item())
+        current_input = [next_prediction]
+    export['FORECAST'] = predictions
+    export.to_csv(f"export/ForecastTemplate3-{filename}.csv", index=False)
+    return export
+
+def prediction_rnn(model, filename):
+    export = forecast.copy()
+    predictions = []
+    current_input = last_value.reshape(1, 1, 1)
+    for _ in range(len(export)):  # for each hour in the next month
+        next_prediction = model.predict(current_input)
+        predictions.append(next_prediction.item())
+        current_input = next_prediction.reshape(1, 1, 1)
+    export['FORECAST'] = predictions
+    export.to_csv(f"export/ForecastTemplate3-{filename}.csv", index=False)
+    return export
+
+def calculate_rmse(results):
+    return np.sqrt(mean_squared_error(solution["POWER"], results["FORECAST"]))
+
 
 # Linear Regression
 def linear():
-    X = time_series['TIME'].values.reshape(-1, 1)
-    y = time_series['POWER']
     model = LinearRegression()
     model.fit(X, y)
-    pred = model.predict(forecast['TIME'].values.reshape(-1, 1))
-    fore_df["FORECAST"] = pred
-    rmse = np.sqrt(mean_squared_error(solution["POWER"], fore_df["FORECAST"]))
-    print("LR RMSE:", rmse)
-    export = fore_df[['TIMESTAMP', 'FORECAST']]
-    export.to_csv("export/ForecastTemplate3-LR.csv", index=False)
+    results = prediction(model, "LR")
+    rmse = calculate_rmse(results)
+    print(f"LR RMSE: {rmse}")
+
 
 # Support Vector Regression
 def svr():
     model = SVR(kernel='rbf', C=0.01, gamma=0.1, epsilon=.1)
     model.fit(X, y)
-    pred = model.predict(forecast['TIME'].values.reshape(-1, 1))
-    fore_df["FORECAST"] = pred
-    rmse = np.sqrt(mean_squared_error(solution["POWER"], fore_df["FORECAST"]))
-    print("SVR RMSE:", rmse)
-    export = fore_df[['TIMESTAMP', 'FORECAST']]
-    export.to_csv("export/ForecastTemplate3-SVR.csv", index=False)
+    results = prediction(model, "SVR")
+    rmse = calculate_rmse(results)
+    print(f"SVR RMSE: {rmse}")
 
 # Artificial Neural Network
 def ann():
@@ -45,61 +72,29 @@ def ann():
     model.compile(optimizer="adam", loss="mean_squared_error")
     model.fit(X, y, epochs=30, batch_size=16)
 
-    pred = model.predict(forecast['TIME'])
-    fore_df["FORECAST"] = pred
-    rmse = np.sqrt(mean_squared_error(solution["POWER"], pred))
+    results = prediction(model, "ANN")
+    rmse = calculate_rmse(results)
     print("ANN RMSE:", rmse)
-    export = fore_df[['TIMESTAMP', 'FORECAST']]
-    export.to_csv("export/ForecastTemplate3-ANN.csv", index=False)
-
 
 # Recurrent Neural Network
-def create_sequences(df, target, window_size=5):
-    sequences = []
-    labels = []
-    for i in range(len(df) - window_size):
-        sequences.append(df.iloc[i:i+window_size][['hour', 'dayofweek', 'month']].values)
-        labels.append(df.iloc[i + window_size][target])
-    return np.array(sequences), np.array(labels)
 
 def rnn():
-    df = forecast.copy()
-    ts = time_series.copy()
-    ts['TIMESTAMP'] = pd.to_datetime(ts['TIMESTAMP'])
-    ts['hour'] = ts['TIMESTAMP'].dt.hour
-    ts['dayofweek'] = ts['TIMESTAMP'].dt.dayofweek
-    ts['month'] = ts['TIMESTAMP'].dt.month
+    X_train = X.reshape(X.shape[0], 1, X.shape[1])
 
-    window_size = 5
-    X_train, y_train = create_sequences(ts, 'POWER', window_size)
-    model = tf.keras.Sequential(
-        [
-            tf.keras.layers.SimpleRNN(50, activation='relu', input_shape=(X_train.shape[1], X_train.shape[2])),
-            tf.keras.layers.Dense(1)
-        ]
-    )
+    model = keras.Sequential([
+        keras.layers.LSTM(64, input_shape=(1, 1)),
+        keras.layers.Dense(1)
+    ])
+
     model.compile(optimizer="adam", loss="mean_squared_error")
-    model.fit(X_train, y_train, epochs=30, batch_size=16)
+    model.fit(X_train, y, epochs=30, batch_size=16)
 
-    df['TIMESTAMP'] = pd.to_datetime(df['TIMESTAMP'])
-    df['hour'] = df['TIMESTAMP'].dt.hour
-    df['dayofweek'] = df['TIMESTAMP'].dt.dayofweek
-    df['month'] = df['TIMESTAMP'].dt.month
-    df['POWER'] = None
+    results = prediction_rnn(model, "RNN")
+    rmse = calculate_rmse(results)
+    print(f"RNN RMSE: {rmse}")
 
-    X_pred, _ = create_sequences(df, "POWER", window_size)
-
-    pred = model.predict(X_pred)
-    df = fore_df.iloc[window_size:]
-    sol = solution.iloc[window_size:]
-    df["FORECAST"] = pred
-    rmse = np.sqrt(mean_squared_error(sol["POWER"], df["FORECAST"]))
-    print("RNN RMSE:", rmse)
-    export = df[['TIMESTAMP', 'FORECAST']]
-    export.to_csv("export/ForecastTemplate3-RNN.csv", index=False)
 
 # Prediction
 
 if __name__ == "__main__":
     rnn()
-

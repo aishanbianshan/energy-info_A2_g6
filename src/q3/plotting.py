@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-windowsize = 5
 
 filepath = "export/"
 
@@ -30,12 +29,11 @@ def lr_svr_plot():
     plt.show()
 
 def nn_plot():
-    dates_reduced = dates[:-windowsize]
     plt.figure(figsize=(12, 8))
 
-    plt.plot(dates_reduced, solution['POWER'][:-windowsize], label='True Wind Power')
-    plt.plot(dates_reduced, ann[:-windowsize], label='ANN Predicted Power')
-    plt.plot(dates_reduced, rnn, label='RNN Predicted Power')
+    plt.plot(dates, solution['POWER'], label='True Wind Power')
+    plt.plot(dates, ann, label='ANN Predicted Power')
+    plt.plot(dates, rnn, label='RNN Predicted Power')
 
     plt.title(f"True Wind Power vs ANN and RNN Predicted Power")
     plt.xticks(rotation=45)
