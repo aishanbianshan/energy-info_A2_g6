@@ -26,7 +26,7 @@
 \projectfrontpage
 
 
-\chapter{Introduction}
+\chapter*{Introduction}
 \subsection{linear regression for wind power prediction}
 the linear model is defined as $y=wx+b$.
 And the residual for observation $i$ is $e_i =y_i -(wx_i+b)$. Thus, linear regression is used to minimize the sum of residual squares, shown as followed:
@@ -39,19 +39,20 @@ And the residual for observation $i$ is $e_i =y_i -(wx_i+b)$. Thus, linear regre
 
 
 \subsection{K-NN for wind power prediction}
+We Calculate the distance between $x$ and each training data point $x_i$ and select $k$ data points with the smallest distances to $x$, and compute the average (or weighted average) of the target values $y_{ij}$ of these $k$ data points to 
+$x$ :
 \begin{equation}
 \begin{aligned}
-
+\Bar{y} = \sum_{j=1}^{k} w_{ij}\frac{y_{ij}}{k}
 \end{aligned}
 \end{equation}
 \newline
 
 \subsection{SVR for wind power prediction}
-\begin{equation}
-\begin{aligned}
+We use a hyperplane to show the 
+relationship between input features ( wind speed and wind direction for example) and the wind power generated. The goal of SVR is to find a function that maximize the width of $\epsilon$-tube, and also minimize the errors of all points outside the tube.
+We use a soft SVR with small tolerance (0.1) to manage our model fitting
 
-\end{aligned}
-\end{equation}
 \newline
 
 
@@ -66,31 +67,38 @@ where $y(x)$ is the variable for output signal, $x_i$ are variables for input si
 \newline
 
 \subsection{RNN  for wind power prediction}
+We have the present input $x_t$,  the hidden state $h_t$ and three weights: U for the input layer, W for the hidden layer and V for the output layer.Time recurrence is introduced with $h_t$ and its previous state $h_{t-1}$. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{fig/rnn.png}
+\caption{\label{fig:q41} RNN Architecture}
+\end{figure}
+
 \begin{equation}
 \begin{aligned}
+h_t &=f(U*x_t +W*h_{t-1})\\
+y_t &= V*f(h_t)
 
 \end{aligned}
 \end{equation}
 \newline
+$f$ as the activation function
+\chapter*{Question 1}
 
-\chapter{Question 1}
+SVR performs the best out of the four models with an RMSE of 0.214, as seen in Table \ref{tab:q1-RMSE-comparison}  showing the RMSE value of each of the four models. The ANN is second best with an RMSE of 0.215 and LR/KNN has the same RMSE of 0.217.
 
-\section{Comparison of RMSE}
-SVR performs the best out of the four models with an RMSE of 0.214, as seen in Table \ref{tab:q1-RMSE-comparison} 
-showing the RMSE value of each of the four models. The ANN is second best with an RMSE of 0.215 and LR/KNN has the same RMSE of 0.217.
-%  add some words about why svr performs the best and why other three are not suitable
 \begin{table}[H]
     \centering
-    \caption{\label{tab:q1-RMSE-comparison} Table of RMSE for the Four Methods}
     \begin{tabular}{|c|c|c|c|c|} \hline 
         Method & LR & KNN & SVR & ANN\\ \hline 
         RMSE&  0.217&  0.217&  0.214& 0.215\\ \hline
     \end{tabular}
-    % \label{tab:q1-RMSE-comparison}
+    \caption{Table of RMSE for the Four Methods}
+    \label{tab:q1-RMSE-comparison}
 \end{table}
 
-\section{Training}
-Figure \ref{fig:q1-training-data} illustrates how each models predicts on the training data. It shows how each of the models behave for different inputs. LR is restricted to a linear relationship, but performs okay in this case compared to the other models. It predicts negative power values for low wind speeds with is not correct. KNN regression uses k=1000, and performs similar to LR in terms of RMSE. Difference being all values are legal. SVR seems to outperform the simple ANN even though it does not predict correctly at low wind speed. Furthermore, SVR seems to not predict a lower power output than 0.1. ANN looks pretty good, but is outperformed by SVR, as it does not predicts worse on higher power outputs. KNN and SVR has been optimized with some simple parameter tuning.
+Figure \ref{fig:q1-training-data} demonstrates model predictions on training data. LR, though functional, is constrained by its linear modeling capability, inaccurately predicts negative power at low wind speeds. KNN (k=1000) mirrors LR's RMSE but ensures valid outputs. SVR outperforms both ANN and KNN, even though it maintains a minimum prediction of 0.1 power output and excelling with smaller datasets through effective generalization, despite inaccuracies at low wind speeds. ANN, capable of complex modeling, is hindered by the small dataset size. Both KNN and SVR have undergone basic parameter tuning, with SVR showing superior performance and less sensitivity to outliers. LR, though functional, is constrained by its linear modeling capability.
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{fig/q1-ALL-training.png}
@@ -98,7 +106,6 @@ Figure \ref{fig:q1-training-data} illustrates how each models predicts on the tr
     \label{fig:q1-training-data}
 \end{figure}
 
-\section{Forecasts}
 Figure \ref{fig:q1-forecast-comparison}  shows the forecasted vs. actual power of the four models. All models performs okay, but they seem to struggle with predicting peak power. LR predicts negative power output in some places, which is wrong. SVR predicts badly for low power compared to the actual power. 
 \begin{figure}[H]
     \centering
@@ -108,7 +115,7 @@ Figure \ref{fig:q1-forecast-comparison}  shows the forecasted vs. actual power o
 \end{figure}
 
 
-\chapter{Question 2}
+\chapter*{Question 2}
 
 To iterate on the Linear Regression Model, we include additional variables to see what effect it has on the predictive power of the model.
 
@@ -129,7 +136,7 @@ WindPower = \beta_0 + \beta_1 \cdot WindSpeed + \beta_2 \cdot WindDirection + \e
 
 Running the prediction model we get the following coefficients for the two independent variables:
 
-\begin{table}[H]
+\begin{table}[H]\centering
 \begin{tabular}{|l|l|}
 \hline
 $\beta_1$ & 0.12654118  \\ \hline
@@ -146,9 +153,9 @@ As we can see Wind Speed has the larger affect on predicting Wind power, but inc
     \label{fig:q2-forecast}
 \end{figure}
 
-The prediction using Multiple Linear Regression is slightly more accurate than the Linear Model, especially during days of higher variance. This is also reflected in the RMSE being slightly lower for MLR. MLR is taking more parameters into the model, wh
+The prediction using Multiple Linear Regression is slightly more accurate than the Linear Model, especially during days of higher variance. This is also reflected in the RMSE being slightly lower for MLR. MLR is taking more parameters into the model, which is more closely-related in a real-world scenario where wind speed is not the only factor to power generated 
 
-\begin{table}[H]
+\begin{table}[H]\centering
 \begin{tabular}{|l|l|l|}
 \hline
 Method & LR & MLR  \\ \hline
@@ -157,38 +164,50 @@ RMSE   & 0.217  & 0.211    \\ \hline
 \end{table}
 
 
-\chapter{Question 3}
+\chapter*{Question 3}
+% LR, SVR, ANN need to be time series with a window size of 1
+% Please explain about how you encode the data as the input and the output in these models.
+In order to forecast time-series data we first need to do some simple prepossessing of the training data. After removing all columns except for the Timestamp and Power, we now need to create a sliding window for our training data. In order to do this, we split the data up into sequences such that $x$ at time $t$ has a corresponding $y$ at time $t+1$. We thereby train the models by predicting the next value.
 
-LR = 0.293
+The Linear Regression models takes a simple approach to see if there is a linear relationship between time and power. It then uses this linear relationship to predict the power for other times.
 
-The Linear Regression model takes a simple approach to see if there is a linear relationship between time and power. It then uses this predicted relationship to predict the power for other times.
+The Artificial Neural Network takes in the same data, but will try to find weights that reflect the data instead of relying on a linear relationship. For the ANN we use a simple sequential network with a 10 node dense layer, training the model for 20 epochs.
 
-SVR = 0.287
+The RNN model uses the more complicated LSTM layer, allowing it to retain (and discard) memory from previous iterations.
+
+For all the models we've set the window size to 1.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q3-LR-SVR.png}
+    \caption{Comparing LR and SVR predictions with the actual power}
+    \label{fig:q3-lr-svr}
+\end{figure}
+
+Graph \ref{fig:q3-lr-svr} indicates that While the models can predict the patterns, they struggle with the higher and lower values. The linear Regression models seems to outperform the SVR, which the corresponding RMSE values also confirm.
 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{fig/q3-ANN-RNN.png}
+    \caption{Comparing ANN and RNN predictions with the actual power}
+    \label{fig:q2-nn}
+\end{figure}
 
-ANN
-The Artificial Neural Network takes in the same data, but will try to find weights that reflect the data instead of relying on a linear relationship. 
+Both Neural Networks outperform the lr and svr models, being able to more accurately predict the data. The tops are almost always reached, while some of the bottoms are still off by a certain margin.
 
-RNN
+While the RNN network provides the most accurate model, the degree to which it outperforms the others is relatively negligible considering the added complexity. This accuracy however might be more noticeable and important for larger datasets. But for smaller datasets Linear Regression is adequate while also keeping complexity to a minimum. 
 
-For the recurrent neural network we need to preprocess the data by making sequences. We divide the data into sequences based on a window size so that we can feed in the window size to the network and it will predict the next value based on that window.
-
-
--Time series doesn't necessarily provide a linear relationship, make LR not as accurate?
-
-- RNN with its "memory", is the obvious choice for forecasting based on time series.
-
-\begin{table}[H]
+\begin{table}[H]\centering
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 Method & LR     & SVR     & ANN    & RNN \\ \hline
-RMSE   & 0.293  & 0.287   & 0      & 0   \\ \hline
+RMSE   & 0.127  & 0.128   & 0.126      & 0.125   \\ \hline
 \end{tabular}
 \end{table}
 
 
-\chapter{Question 4}
+\chapter*{Question 4}
 
 \begin{figure}[H]
 \centering
@@ -372,12 +391,12 @@ w^+_1 &= w_1 - \alpha * \frac{\partial \text{E}_{total}  }{\partial w_1} \\
 We set $d= 0.0001$ as the threshold for the difference between the error in a round and the error in the previous round.  Our training program gives out the finalized model with updated weights and RMSE:
 \newline
 $
-\newline w_1=0.11956974287617168, , 
-\newline w_2=0.1978487143808587, , 
-\newline w_3=0.1091489032411234,  ,
-\newline w_4=0.24574451620561713, , 
-\newline w_5=-0.030695635344251397, ,
-\newline w_6=0.058200264079797115, ,
+\newline w_1=0.11956974287617168,  
+\newline w_2=0.1978487143808587,  
+\newline w_3=0.1091489032411234, 
+\newline w_4=0.24574451620561713, 
+\newline w_5=-0.030695635344251397, 
+\newline w_6=0.058200264079797115, 
 \newline \text{RMSE}=0.0036431398381499003
 $
 
@@ -408,23 +427,35 @@ $
     \end{tabular}
 \end{table}
 
-\color{blue}To use neural network with all features provided, we build a ANN model with the following topology: v10,u10 to calculate wind direction at 10 meter as input of $x_1$, wind speed at 10 meter as $x_2$. v100 and u100 to calculate wind direction at 100 meter as input of $x_3$,  wind speed at 100 meter as $x_4$, shown as Figure. \ref{fig:q41}.
+To use neural network with all features provided, we build a ANN model with the following topology: v10,u10 to calculate wind direction at 10 meter as input of $x_1$, wind speed at 10 meter as $x_2$. v100 and u100 to calculate wind direction at 100 meter as input of $x_3$,  wind speed at 100 meter as $x_4$, shown as Figure. \ref{fig:q41}.
 The angular parameter $z$ is calculated based on the following formula: 
 $z = arctan(V/U)$, where  
 $V$ is  meridional component and $U$ is zonal component
 
-\color{red}{write program of this model , and a paragraph to explan the predicted values vs. actual measurements }
-\begin{figure}
+We execute the  program according to this model in Figure \ref{fig:q41}, and generated the following plot of predicted power vs. actual measurement in Figure \ref{fig:q42}
+
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\linewidth]{fig/q41.png}
 \caption{\label{fig:q41} \neural ANN Topology for All Features}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{fig/q42.png}
+\caption{\label{fig:q42} Multi-variable ANN predicted power vs. actual measurement}
+\end{figure}
+RMSE for Multivariable ANN = 0.1928214148771009
+
 }
 
 
-\printbibliography{reference}
-\bibitem[1]{https://amt.copernicus.org/articles/15/3465/2022/}
+
+
+\chapter*{reference}
+{\url{http://https://amt.copernicus.org/articles/15/3465/2022/}}
+% \bibitem[1]{https://amt.copernicus.org/articles/15/3465/2022/}
 
 
 \end{document}
