@@ -7,40 +7,34 @@ import tensorflow as tf
 from data import *
 
 
-#creating the training data set, where y lags by 1
-X = time_series['POWER'][:-1]
-y = time_series['POWER'].shift(-1)[:-1].values
-X = X.values.reshape(-1, 1)
-last = time_series['POWER'].shift(-1).iloc[-2]
-last_value = np.array([last])
+windowsize = 1
 
+def create_training(dataset, windowsize):
+    rows = len(dataset) - windowsize
+    x = np.zeros((rows, windowsize))
+    y = np.zeros(rows)
+    for i in range(rows):
+        for j in range(windowsize):
+            x[i][j] = dataset[i + j]
+        y[i] = dataset[i + windowsize]
+    return x, y
+
+
+#creating the training data set, where y lags by 1
+power = time_series['POWER'].to_numpy()
+X, y = create_training(power, windowsize)
+actual = solution['POWER'].to_numpy()
+forecast_input, _ = create_training(actual, windowsize)
 
 def prediction(model, filename):
-    export = forecast.copy()
-    predictions = []
-    current_input = last_value
-    for _ in range(len(export)):  # for each hour in the next month
-        next_prediction = model.predict(current_input)
-        predictions.append(next_prediction.item())
-        current_input = [next_prediction]
-    export['FORECAST'] = predictions
-    export.to_csv(f"export/ForecastTemplate3-{filename}.csv", index=False)
-    return export
-
-def prediction_rnn(model, filename):
-    export = forecast.copy()
-    predictions = []
-    current_input = last_value.reshape(1, 1, 1)
-    for _ in range(len(export)):  # for each hour in the next month
-        next_prediction = model.predict(current_input)
-        predictions.append(next_prediction.item())
-        current_input = next_prediction.reshape(1, 1, 1)
-    export['FORECAST'] = predictions
+    export = forecast.copy()[:-1]
+    predicted = model.predict(forecast_input)
+    export['FORECAST'] = predicted
     export.to_csv(f"export/ForecastTemplate3-{filename}.csv", index=False)
     return export
 
 def calculate_rmse(results):
-    return np.sqrt(mean_squared_error(solution["POWER"], results["FORECAST"]))
+    return np.sqrt(mean_squared_error(actual[windowsize:], results["FORECAST"]))
 
 
 # Linear Regression
@@ -65,14 +59,13 @@ def ann():
     model = tf.keras.Sequential(
         [
             tf.keras.layers.Dense(10, activation="relu", input_shape=(1,)),
-            tf.keras.layers.Dense(10, activation="relu"),
             tf.keras.layers.Dense(1),
         ]
     )
     model.compile(optimizer="adam", loss="mean_squared_error")
-    model.fit(X, y, epochs=30, batch_size=16)
+    model.fit(X, y, epochs=20, batch_size=16)
 
-    results = prediction(model, "ANN")
+    results = prediction(model, "ann")
     rmse = calculate_rmse(results)
     print("ANN RMSE:", rmse)
 
@@ -82,14 +75,14 @@ def rnn():
     X_train = X.reshape(X.shape[0], 1, X.shape[1])
 
     model = keras.Sequential([
-        keras.layers.LSTM(64, input_shape=(1, 1)),
+        keras.layers.LSTM(50, input_shape=(1, 1)),
         keras.layers.Dense(1)
     ])
 
     model.compile(optimizer="adam", loss="mean_squared_error")
-    model.fit(X_train, y, epochs=30, batch_size=16)
+    model.fit(X_train, y, epochs=20, batch_size=16)
 
-    results = prediction_rnn(model, "RNN")
+    results = prediction(model, "RNN")
     rmse = calculate_rmse(results)
     print(f"RNN RMSE: {rmse}")
 
@@ -97,4 +90,4 @@ def rnn():
 # Prediction
 
 if __name__ == "__main__":
-    rnn()
+    ann()
