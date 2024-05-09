@@ -27,8 +27,8 @@
 
 
 \chapter*{Introduction}
-\subsection{linear regression for wind power prediction}
-the linear model is defined as $y=wx+b$.
+\subsection{Linear regression for wind power prediction}
+The linear model is defined as $y=wx+b$.
 And the residual for observation $i$ is $e_i =y_i -(wx_i+b)$. Thus, linear regression is used to minimize the sum of residual squares, shown as followed:
 \begin{equation}
 \begin{aligned}
@@ -38,7 +38,7 @@ And the residual for observation $i$ is $e_i =y_i -(wx_i+b)$. Thus, linear regre
 \newline
 
 
-\subsection{K-NN for wind power prediction}
+\subsection{KNN for wind power prediction}
 We Calculate the distance between $x$ and each training data point $x_i$ and select $k$ data points with the smallest distances to $x$, and compute the average (or weighted average) of the target values $y_{ij}$ of these $k$ data points to 
 $x$ :
 \begin{equation}
@@ -50,7 +50,7 @@ $x$ :
 
 \subsection{SVR for wind power prediction}
 We use a hyperplane to show the 
-relationship between input features ( wind speed and wind direction for example) and the wind power generated. The goal of SVR is to find a function that maximize the width of $\epsilon$-tube, and also minimize the errors of all points outside the tube.
+relationship between input features (wind speed and wind direction for example) and the wind power generated. The goal of SVR is to find a function that maximize the width of $\epsilon$-tube, and also minimize the errors of all points outside the tube.
 We use a soft SVR with small tolerance (0.1) to manage our model fitting
 
 \newline
@@ -451,12 +451,9 @@ RMSE for Multivariable ANN = 0.1928214148771009
 }
 
 
+\nocite{Krisch}
 
-
-\chapter*{reference}
-{\url{http://https://amt.copernicus.org/articles/15/3465/2022/}}
-% \bibitem[1]{https://amt.copernicus.org/articles/15/3465/2022/}
-
+\printbibliography{}
 
 \end{document}
 
