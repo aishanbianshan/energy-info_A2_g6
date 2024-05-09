@@ -29,3 +29,7 @@ mlr_rmse = sqrt(mean_squared_error(forecast_y, mlr_y_pred))
 print("LR RMSE:", lr_rmse)
 print("MLR RMSE:", mlr_rmse)
 
+
+export = template.copy()
+export['FORECAST'] = mlr_y_pred
+export.to_csv(f"export/ForecastTemplate2.csv", index=False)

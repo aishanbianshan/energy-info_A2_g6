@@ -10,6 +10,7 @@ solution_path = root.joinpath("data", "Solution.csv")
 
 train = pd.read_csv(train_path)
 forecast = pd.read_csv(forecast_path)
+template = pd.read_csv(template_path)
 solution = pd.read_csv(solution_path)
 
 
