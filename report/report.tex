@@ -167,20 +167,15 @@ RMSE   & 0.217  & 0.211    \\ \hline
 \chapter*{Question 3}
 % LR, SVR, ANN need to be time series with a window size of 1
 % Please explain about how you encode the data as the input and the output in these models.
-LR = 0.293
+In order to forecast time-series data we first need to do some simple prepossessing of the training data. After removing all columns except for the Timestamp and Power, we now need to create a sliding window for our training data. In order to do this, we split the data up into sequences such that $x$ at time $t$ has a corresponding $y$ at time $t+1$. We thereby train the models by predicting the next value.
 
-The Linear Regression model takes a simple approach to see if there is a linear relationship between time and power. It then uses this predicted relationship to predict the power for other times.
+The Linear Regression models takes a simple approach to see if there is a linear relationship between time and power. It then uses this linear relationship to predict the power for other times.
 
-SVR = 0.287
+The Artificial Neural Network takes in the same data, but will try to find weights that reflect the data instead of relying on a linear relationship. For the ANN we use a simple sequential network with a 10 node dense layer, training the model for 20 epochs.
 
+The RNN model uses the more complicated LSTM layer, allowing it to retain (and discard) memory from previous iterations.
 
-
-ANN
-The Artificial Neural Network takes in the same data, but will try to find weights that reflect the data instead of relying on a linear relationship. 
-
-RNN
-
-For the recurrent neural network we need to preprocess the data by making sequences. We divide the data into sequences based on a window size of $__$ so that we can feed in the window size to the network and it will predict the next value based on that window.
+For all the models we've set the window size to 1.
 
 \begin{figure}[H]
     \centering
@@ -189,39 +184,19 @@ For the recurrent neural network we need to preprocess the data by making sequen
     \label{fig:q3-lr-svr}
 \end{figure}
 
+Graph \ref{fig:q3-lr-svr} indicates that While the models can predict the patterns, they struggle with the higher and lower values. The linear Regression models seems to outperform the SVR, which the corresponding RMSE values also confirm.
+
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/q3-lr_svr_window1.png}
-    \caption{Comparing LR and SVR predictions with the actual power}
-    \label{fig:q3-lr-svr-window1}
-\end{figure}
-With sliding window of size 1, we generate the predicted results using linear regression and SVR with the following RMSE:
-
-
-\begin{table}[H]\centering
-\begin{tabular}{|l|l|l|l|l|}
-\hline
-Method & LR     & SVR     \\ \hline
-RMSE   & 0.3983221083934195  & 0.46501347533685444    \\ \hline
-\end{tabular}
-\end{table}
-% RMSE for svr= 0.3983221083934195
-% RMSE for lr= 0.46501347533685444
-
-The 16081 entries of TrainData.csv is divided into the first 15360 and the remaining 720. The first 15360 data records are used to build the linear regression and SVR models whereas the remaining 720 records are used to predict results in November of 2013
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{fig/q3-NN.png}
+    \includegraphics[width=1\linewidth]{fig/q3-ANN-RNN.png}
     \caption{Comparing ANN and RNN predictions with the actual power}
     \label{fig:q2-nn}
 \end{figure}
 
+Both Neural Networks outperform the lr and svr models, being able to more accurately predict the data. The tops are almost always reached, while some of the bottoms are still off by a certain margin.
 
--Time series doesn't necessarily provide a linear relationship, make LR not as accurate?
-
-- RNN with its "memory", is the obvious choice for forecasting based on time series.
+While the RNN network provides the most accurate model, the degree to which it outperforms the others is relatively negligible considering the added complexity. This accuracy however might be more noticeable and important for larger datasets. But for smaller datasets Linear Regression is adequate while also keeping complexity to a minimum. 
 
 \begin{table}[H]\centering
 \begin{tabular}{|l|l|l|l|l|}
